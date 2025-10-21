@@ -142,8 +142,3 @@ if __name__ == "__main__":
     tracker = PiVisionTracker(model_path="yolov8n.pt", camera_index=0)
     tracker.run()
 
-
-if __name__ == "__main__":
-    detector = PiVisionDetector(model_path="yolov8n.pt", conf_threshold=0.5)
-    detector.run()
-
