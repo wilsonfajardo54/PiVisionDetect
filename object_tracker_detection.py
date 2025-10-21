@@ -9,23 +9,34 @@ Description:
     - Uses OpenVC for YOLO model. 
 """
 
+from picamera2 import Picamera2
 import cv2
 import time
 from ultralytics import YOLO
 
 class PiVisionTracker:
-    def __init__(self, model_path="yolov8n.pt", camera_index=0, conf_threshold=0.5):
-        """Initialize camera, model, and window."""
-        self.cap = cv2.VideoCapture(camera_index)
+    def __init__(self, model_path="yolov8n.pt",conf_threshold=0.5):
+        """Initialize Picamera, model, and window."""
+    
         self.model = YOLO(model_path)
         self.conf_threshold = conf_threshold
         self.tracker = None
         self.tracking = False
         self.tracked_label = None
         self.last_detections = []
+        self.last_frame = None
 
-        if not self.cap.isOpened():
-            raise IOError("Cannot open camera. Check connection or index.")
+        #Picamera
+        self.picam2 = Picamera2()
+        config = self.picam2.create_prview_configuration(
+            main={"size": (640,480), "format": "RGB888"}
+        )
+        self.picam2.configure(config)
+        self.picam2.set_controls({
+            "AwbEnable": True,
+            "ExposureTime": 15000,
+            "AnalogueGain": 5.0
+        })
 
         cv2.namedWindow("PiVision Object Tracker", cv2.WINDOW_NORMAL)
         print("PiVision Object Tracker Initialized.")
@@ -61,7 +72,7 @@ class PiVisionTracker:
         cv2.destroyWindow("Select Object to Track")
 
         if bbox == (0, 0, 0, 0):
-            print("⚠️ No region selected.")
+            print("No region selected.")
             return
 
         # Match selection to YOLO detections
@@ -85,28 +96,29 @@ class PiVisionTracker:
 
     def run(self):
         """Main loop for detection and tracking."""
+        self.picam2.start()
         prev_time = 0
+        print("Starting feed")
 
         while True:
-            ret, frame = self.cap.read()
-            if not ret:
-                print("Frame capture failed.")
-                break
+            frame = self.picam2.capture_array()
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            self.last_frame = frame.copy()
 
-            # Compute FPS
             current_time = time.time()
-            fps = 1 / (current_time - prev_time) if prev_time else 0
+            fps = 1 / (current_time - prev_time) if prev_time else 0 
             prev_time = current_time
 
             key = cv2.waitKey(1) & 0xFF
 
-            # Press 's' to select object
+            #user being able to select an object 
             if key == ord('s'):
                 self.select_object(frame)
 
-            # Run YOLO detection if not tracking
             if not self.tracking:
-                frame = self.detect_objects(frame)
+                frame = self.detect_object(frame)
+
+            #Tracker update
 
             # Update tracker
             if self.tracking and self.tracker is not None:
@@ -133,12 +145,12 @@ class PiVisionTracker:
             if key == ord('q'):
                 break
 
-        self.cap.release()
+        self.picam2.stop()
         cv2.destroyAllWindows()
         print("Tracker stopped.")
 
 
 if __name__ == "__main__":
-    tracker = PiVisionTracker(model_path="yolov8n.pt", camera_index=0)
+    tracker = PiVisionTracker(model_path="yolov8n.pt", conf_threshold=0.5)
     tracker.run()
 
