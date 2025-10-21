@@ -1,8 +1,8 @@
 """
-PiVision Object Tracker
+Vision Object Tracker
 Author: Wilson Fajardo 
 Class: Communicating Robots
-Platform: Raspberry Pi or Laptop
+Platform: Laptop
 Description:
     Simple real-time object tracking using OpenCV (CSRT Tracker).
     Press 's' to select an object to track, 'q' to quit.
@@ -12,7 +12,7 @@ import cv2
 import time
 
 
-class PiVisionTracker:
+class VisionTracker:
     def __init__(self, camera_index=0):
         """
         Initialize camera and tracker.
@@ -24,11 +24,11 @@ class PiVisionTracker:
         self.window_name = "PiVision Object Tracker"
 
         if not self.cap.isOpened():
-            raise IOError("❌ Cannot open camera. Check connection or index.")
+            raise IOError("Cannot open camera. Check connection or index.")
 
         # Create display window
         cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
-        print("✅ PiVision Object Tracker Initialized.")
+        print("Vision Object Tracker Initialized.")
         print("Press 's' to select an object to track, 'q' to quit.\n")
 
     def select_object(self, frame):
@@ -41,9 +41,9 @@ class PiVisionTracker:
             self.tracker = cv2.TrackerCSRT_create()
             self.tracker.init(frame, bbox)
             self.tracking = True
-            print("🎯 Tracking started.")
+            print("Tracking started.")
         else:
-            print("⚠️ No region selected.")
+            print("No region selected.")
 
     def run(self):
         """
@@ -54,7 +54,7 @@ class PiVisionTracker:
         while True:
             ret, frame = self.cap.read()
             if not ret:
-                print("⚠️ Failed to capture frame.")
+                print("Failed to capture frame.")
                 break
 
             # Compute FPS
@@ -95,9 +95,9 @@ class PiVisionTracker:
         # Cleanup
         self.cap.release()
         cv2.destroyAllWindows()
-        print("🛑 Tracker stopped.")
+        print("Tracker stopped.")
 
 
 if __name__ == "__main__":
-    tracker = PiVisionTracker(camera_index=0)
+    tracker = VisionTracker(camera_index=0)
     tracker.run()
