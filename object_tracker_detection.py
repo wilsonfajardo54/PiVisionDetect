@@ -35,12 +35,12 @@ class PiVisionTracker:
         self.picam2.set_controls({
             "AwbEnable": True,
             "ExposureTime": 15000,
-            "AnalogueGain": 5.0
+            "AnalogueGain": 20.0
         })
 
         cv2.namedWindow("PiVision Object Tracker", cv2.WINDOW_NORMAL)
         print("PiVision Object Tracker Initialized.")
-        print("Press 's' to select an object, 'q' to quit.\n")
+        print("Press 's' to select an object, 'c' to quit.\n")
 
     def detect_objects(self, frame):
         """Run YOLO detection on the frame."""
@@ -142,7 +142,7 @@ class PiVisionTracker:
             # Show frame
             cv2.imshow("PiVision Object Tracker", frame)
 
-            if key == ord('q'):
+            if key == ord('c'):
                 break
 
         self.picam2.stop()
