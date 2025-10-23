@@ -28,7 +28,7 @@ class PiVisionTracker:
 
         #Picamera
         self.picam2 = Picamera2()
-        config = self.picam2.create_prview_configuration(
+        config = self.picam2.create_preview_configuration(
             main={"size": (640,480), "format": "RGB888"}
         )
         self.picam2.configure(config)
@@ -116,7 +116,7 @@ class PiVisionTracker:
                 self.select_object(frame)
 
             if not self.tracking:
-                frame = self.detect_object(frame)
+                frame = self.detect_objects(frame)
 
             #Tracker update
 
