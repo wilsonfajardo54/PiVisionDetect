@@ -78,7 +78,7 @@ class PiVisionTracker:
         # Match selection to YOLO detections
         (x, y, w, h) = bbox
         x2, y2 = x + w, y + h
-        selected_label = "Unknown"
+        selected_label = "Tracking selected object"
         for (label, (dx1, dy1, dx2, dy2)) in self.last_detections:
             if (x >= dx1 and y >= dy1) and (x2 <= dx2 and y2 <= dy2):
                 selected_label = label
