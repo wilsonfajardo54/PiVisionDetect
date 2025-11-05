@@ -13,6 +13,7 @@ from picamera2 import Picamera2
 import cv2
 import time
 from ultralytics import YOLO
+from record_object import ObjectRecorder
 
 class PiVisionTracker:
     def __init__(self, model_path="yolov8n.pt",conf_threshold=0.5):
@@ -38,6 +39,8 @@ class PiVisionTracker:
             "AnalogueGain": 20.0
         })
 
+        self.recorder = ObjectRecorder()
+
         cv2.namedWindow("PiVision Object Tracker", cv2.WINDOW_NORMAL)
         print("PiVision Object Tracker Initialized.")
         print("Press 's' to select an object, 'c' to quit.\n")
@@ -56,6 +59,8 @@ class PiVisionTracker:
             label = self.model.names[cls]
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             detections.append((label, (x1, y1, x2, y2)))
+
+            self.recorder.record(label)
 
             # Draw bounding box
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
