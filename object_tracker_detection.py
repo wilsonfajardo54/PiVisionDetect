@@ -34,9 +34,10 @@ class PiVisionTracker:
         )
         self.picam2.configure(config)
         self.picam2.set_controls({
+            "AeEnable": False,
             "AwbEnable": True,
-            "ExposureTime": 15000,
-            "AnalogueGain": 20.0
+            "ExposureTime": 12000,
+            "AnalogueGain": 6.0
         })
 
         self.recorder = ObjectRecorder()
